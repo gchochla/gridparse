@@ -1,0 +1,41 @@
+[project]
+name = "gridparse"
+version = "1.0.1"
+description = "Grid search directly from argparse"
+readme = "README.md"
+requires-python = ">=3.7"
+license = {file = "LICENSE"}
+keywords = ["machine learning", "grid search", "argparse"]
+authors = [
+  {name = "Georgios (Yiorgos) Chochlakis", email = "georgioschochlakis@gmail.com" }
+]
+maintainers = [
+  {name = "Georgios (Yiorgos) Chochlakis", email = "georgioschochlakis@gmail.com" }
+]
+classifiers = [
+  # Common values are
+  #   3 - Alpha
+  #   4 - Beta
+  #   5 - Production/Stable
+  "Development Status :: 3 - Alpha",
+
+  # Pick your license as you wish
+  "License :: OSI Approved :: MIT License",
+
+  "Programming Language :: Python :: 3",
+  "Programming Language :: Python :: 3.7",
+  "Programming Language :: Python :: 3.8",
+  "Programming Language :: Python :: 3.9",
+  "Programming Language :: Python :: 3.10",
+  "Programming Language :: Python :: 3.11",
+  "Programming Language :: Python :: 3 :: Only",
+]
+
+
+[project.optional-dependencies]
+dev = ["black", "pytest"]
+
+[project.urls]
+"Homepage" = "https://github.com/gchochla/gridparse"
+"Bug Reports" = "https://github.com/gchochla/gridparse/issues"
+"Source" = "https://github.com/gchochla/gridparse"
