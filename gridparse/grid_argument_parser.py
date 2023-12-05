@@ -1,4 +1,7 @@
 import argparse
+import pdb
+from turtle import pd
+import warnings
 from typing import Any, Tuple, List, Optional, Union, Sequence
 from copy import deepcopy
 
@@ -225,9 +228,14 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         def parse_paths(self):
             """Parses all leaf-to-root paths by concatenating their values."""
 
+            if 0 not in self.layers:
+                # we get weird behavior if no root-level arguments are given
+                # so we add an empty list to the root layer
+                self.layers[0] = [[]]
+
             def recursive_path(depth: int, node: int):
                 """Recursively parses all paths from the given node."""
-                if depth >= len(self.layers):
+                if depth > max(self.layers.keys()):
                     return []
                 children = (
                     self.children[depth][node]
@@ -259,13 +267,48 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
             A list of namespaces instead os a single namespace.
         """
 
-        # break { and } into separate arguments for easier parsing
-        arg_strings = (
-            " ".join(arg_strings)
-            .replace("}", " } ")
-            .replace("{", " { ")
-            .split()
-        )
+        # if { and } denote a subspace and not inside a string of something else
+        new_arg_strings = []
+        for arg in arg_strings:
+            new_args = [None, arg, None]
+
+            # find leftmost { and rightmost }
+            idx_ocb = arg.find("{")
+            idx_ccb = arg.rfind("}")
+
+            cnt = 0
+            for i in range(len(arg)):
+                if arg[i] == "{":
+                    cnt += 1
+                elif arg[i] == "}":
+                    cnt -= 1
+
+            # if arg starts with { and end with }, doesn't have a },
+            # or has at least an extra {, then it's a subspace
+            if idx_ocb == 0 and (idx_ccb in (len(arg) - 1, -1) or cnt > 0):
+                new_args[0] = "{"
+                new_args[1] = new_args[1][1:]
+            elif idx_ocb == 0 and cnt <= 0:
+                warnings.warn(
+                    "Found { at the beginning and some } in the middle "
+                    f"of the argument: {arg}."
+                    " This is not considered a \{\} subspace."
+                )
+            # if arg ends with } and doesn't have a {, starts with {,
+            # or has at least an extra }, then it's a subspace
+            if idx_ccb == len(arg) - 1 and (idx_ocb in (0, -1) or cnt < 0):
+                new_args[1] = new_args[1][:-1]
+                new_args[2] = "}"
+            elif idx_ccb == len(arg) - 1 and cnt >= 0:
+                warnings.warn(
+                    "Found } at the end and some { in the middle "
+                    f"of argument: {arg}."
+                    " This is not considered a \{\} subspace."
+                )
+
+            new_arg_strings.extend([a for a in new_args if a])
+
+        arg_strings = new_arg_strings
 
         # break arg_strings into subspaces on { and }
         arg_strings_tree = self._Tree()
