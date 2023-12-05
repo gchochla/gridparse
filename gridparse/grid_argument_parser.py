@@ -218,6 +218,13 @@ class GridArgumentParser(argparse.ArgumentParser):
 
         all_arg_strings = arg_strings_tree.parse_paths()
         all_namespaces = []
+        all_args = []
+
+        if not all_arg_strings:
+            namespace, args = super()._parse_known_args(
+                arg_strings, deepcopy(namespace)
+            )
+            return [namespace], args
 
         # for all possible combinations in the grid search subspaces
         for arg_strings in all_arg_strings:
@@ -250,5 +257,6 @@ class GridArgumentParser(argparse.ArgumentParser):
                 namespaces = new_namespaces
 
             all_namespaces.extend(namespaces)
+            all_args.extend(args)
 
-        return all_namespaces, args
+        return all_namespaces, all_args
