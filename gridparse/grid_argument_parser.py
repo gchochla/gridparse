@@ -6,14 +6,18 @@ from copy import deepcopy
 
 from gridparse.utils import list_as_dashed_str, strbool
 
+# NOTE: if subparsers: parser will parse decision argument, then
+
 
 # overwritten to fix issue in __call__
 class _GridSubparserAction(argparse._SubParsersAction):
     def __call__(
         self,
         parser: argparse.ArgumentParser,
-        namespace: List[argparse.Namespace],
-        values: Optional[Union[str, Sequence[Any]]],
+        namespace: argparse.Namespace,  # contains only subparser arg
+        values: Optional[
+            Union[str, Sequence[Any]]
+        ],  # contains all args for gridparse
         option_string: Optional[str] = None,
     ) -> None:
         parser_name = values[0]
@@ -48,16 +52,24 @@ class _GridSubparserAction(argparse._SubParsersAction):
         # namespace for the relevant parts.
         # NOTE: changed here because parser.parse_args() now returns a list
         # of namespaces instead of a single namespace
+
+        namespaces = []
+
         subnamespaces, arg_strings = parser.parse_known_args(arg_strings, None)
         for subnamespace in subnamespaces:
+            new_namespace = deepcopy(namespace)
             for key, value in vars(subnamespace).items():
-                setattr(namespace, key, value)
+                setattr(new_namespace, key, value)
+            namespaces.append(new_namespace)
 
         if arg_strings:
-            vars(namespace).setdefault(argparse._UNRECOGNIZED_ARGS_ATTR, [])
-            getattr(namespace, argparse._UNRECOGNIZED_ARGS_ATTR).extend(
-                arg_strings
-            )
+            for ns in namespaces:
+                vars(ns).setdefault(argparse._UNRECOGNIZED_ARGS_ATTR, [])
+                getattr(ns, argparse._UNRECOGNIZED_ARGS_ATTR).extend(
+                    arg_strings
+                )
+
+        namespace.__dict__ = {"___namespaces___": namespaces}
 
 
 # overwritten to include our _SubparserAction
@@ -150,6 +162,13 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
     def __init__(self, *args, **kwargs):
         self._grid_args = []
         super().__init__(*args, **kwargs)
+
+    def parse_args(self, *args, **kwargs):
+        vals = super().parse_args(*args, **kwargs)
+        # hacky way to return namespaces in subparser
+        if "___namespaces___" in vals[0]:
+            return vals[0].___namespaces___
+        return vals
 
     def add_argument(self, *args, **kwargs) -> argparse.Action:
         """Augments `add_argument` to support grid search.
@@ -290,7 +309,7 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
             elif idx_ocb == 0 and cnt <= 0:
                 warnings.warn(
                     "Found { at the beginning and some } in the middle "
-                    f"of the argument: {arg}."
+                    f"of the argument: `{arg}`."
                     " This is not considered a \{\} subspace."
                 )
             # if arg ends with } and doesn't have a {, starts with {,
@@ -301,7 +320,7 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
             elif idx_ccb == len(arg) - 1 and cnt >= 0:
                 warnings.warn(
                     "Found } at the end and some { in the middle "
-                    f"of argument: {arg}."
+                    f"of argument: `{arg}`."
                     " This is not considered a \{\} subspace."
                 )
 
