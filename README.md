@@ -1,6 +1,6 @@
 # GridParse
 
-An `ArgumentParser` that supports your *grid-search* needs.
+A lightweight (no dependencies) `ArgumentParser` --- aka `GridArgumentParser` --- that supports your *grid-search* needs.
 
 ## Overview
 
