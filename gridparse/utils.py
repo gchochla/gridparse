@@ -1,3 +1,4 @@
+import argparse
 from typing import Callable
 
 
@@ -23,3 +24,29 @@ def list_as_dashed_str(actual_type: Callable, delimiter: str = "-"):
         return l
 
     return _list_of_lists
+
+
+def strbool(arg: str):
+    """Converts a string boolean to an actual boolean.
+
+    This is useful for searching over boolean hyperparameters,
+    because now multiple values can be passed with `searchable=True`:
+    "--flag true false".
+
+    Args:
+        arg: the string to convert.
+
+    Raises:
+        argparse.ArgumentTypeError: if the string is not a valid boolean.
+    """
+    if isinstance(arg, bool):
+        return arg
+
+    if arg is None:
+        return False
+
+    if arg.lower() == 'true':
+        return True
+    if arg.lower() == 'false':
+        return False
+    raise argparse.ArgumentTypeError('Boolean value expected.')

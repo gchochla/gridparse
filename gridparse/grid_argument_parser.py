@@ -2,7 +2,7 @@ import argparse
 from typing import Tuple, List
 from copy import deepcopy
 
-from gridparse.utils import list_as_dashed_str
+from gridparse.utils import list_as_dashed_str, strbool
 
 
 class GridArgumentParser(argparse.ArgumentParser):
@@ -108,6 +108,14 @@ class GridArgumentParser(argparse.ArgumentParser):
             new_kwargs = self._get_optional_kwargs(*args, **kwargs)
         ## edoc detsap-ypoc
 
+        type = kwargs.get("type", None)
+        if type is not None and type == bool:
+            kwargs["type"] = strbool
+
+        type = kwargs.get("type", None)
+        if type is not None and type == strbool:
+            kwargs.setdefault("default", "false")
+
         searchable = kwargs.pop("searchable", False)
         if searchable:
             dest = new_kwargs["dest"]
@@ -124,6 +132,7 @@ class GridArgumentParser(argparse.ArgumentParser):
             kwargs["nargs"] = nargs
             kwargs["type"] = type
 
+        # doesn't add `searchable` in _StoreAction
         return super().add_argument(*args, **kwargs)
 
     class _Tree:
