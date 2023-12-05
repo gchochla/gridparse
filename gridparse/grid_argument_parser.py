@@ -6,8 +6,6 @@ from copy import deepcopy
 
 from gridparse.utils import list_as_dashed_str, strbool
 
-# NOTE: if subparsers: parser will parse decision argument, then
-
 
 # overwritten to fix issue in __call__
 class _GridSubparserAction(argparse._SubParsersAction):
@@ -69,7 +67,10 @@ class _GridSubparserAction(argparse._SubParsersAction):
                     arg_strings
                 )
 
-        namespace.__dict__ = {"___namespaces___": namespaces}
+        # hacky way to return all namespaces in subparser
+        # method is supposed to perform in-place modification
+        # of namespace, so we add a new attribute
+        namespace.___namespaces___ = namespaces
 
 
 # overwritten to include our _SubparserAction
