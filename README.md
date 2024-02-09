@@ -14,6 +14,8 @@ It transforms the following arguments in the corresponding way:
 
 So, for single arguments, it extends them similar to nargs="+". For multiple arguments, it extends them with `list_as_dashed_str(type, delimiter="~~")` (available in `gridparse.utils`), and this is recursively applied with existing `list_as_dashed_str` types. It can also handle subspaces using square brackets, where you can enclose combinations of hyperparameters within but don't have them combine with values of hyperparameters in other subspaces of the same length.
 
+Moreover, you can use the value (not the default) of another argument as the default by setting the default to `args.<name-of-other-argument>`.
+
 ## Examples
 
 Example without subspaces:

@@ -1,5 +1,4 @@
 import argparse
-import pdb
 import warnings
 from typing import Any, Tuple, List, Optional, Union, Sequence
 from copy import deepcopy
@@ -168,8 +167,55 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         vals = super().parse_args(*args, **kwargs)
         # hacky way to return namespaces in subparser
         if "___namespaces___" in vals[0]:
-            return vals[0].___namespaces___
+            vals = vals[0].___namespaces___
+
+        for ns in vals:
+            # get defaults from other arguments
+            for arg in dir(ns):
+                val = getattr(ns, arg)
+                if isinstance(val, str) and val.startswith("args."):
+                    borrow_arg = val.split("args.")[1]
+                    setattr(ns, arg, getattr(ns, borrow_arg, None))
+
+        if len(vals) == 1:
+            return vals[0]
         return vals
+
+    def _get_value(self, action, arg_string):
+        """Overwrites `_get_value` to support grid search.
+        It is used to parse the value of an argument.
+        """
+        type_func = self._registry_get('type', action.type, action.type)
+        default = action.default
+
+        if (isinstance(default, str) and default.startswith("args.")) and (
+            default == arg_string or arg_string is None
+        ):
+            return arg_string
+
+        if not callable(type_func):
+            msg = argparse._('%r is not callable')
+            raise argparse.ArgumentError(action, msg % type_func)
+
+        # convert the value to the appropriate type
+        try:
+            result = type_func(arg_string)
+
+        # ArgumentTypeErrors indicate errors
+        except argparse.ArgumentTypeError:
+            name = getattr(action.type, '__name__', repr(action.type))
+            msg = str(argparse._sys.exc_info()[1])
+            raise argparse.ArgumentError(action, msg)
+
+        # TypeErrors or ValueErrors also indicate errors
+        except (TypeError, ValueError):
+            name = getattr(action.type, '__name__', repr(action.type))
+            args = {'type': name, 'value': arg_string}
+            msg = argparse._('invalid %(type)s value: %(value)r')
+            raise argparse.ArgumentError(action, msg % args)
+
+        # return the converted value
+        return result
 
     def add_argument(self, *args, **kwargs) -> argparse.Action:
         """Augments `add_argument` to support grid search.
