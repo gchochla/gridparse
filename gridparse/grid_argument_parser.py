@@ -2,12 +2,13 @@ import argparse
 import warnings
 from typing import Any, Tuple, List, Optional, Union, Sequence
 from copy import deepcopy
+from pprint import pprint
 
 from gridparse.utils import list_as_dashed_str, strbool
 
 
 # overwritten to fix issue in __call__
-class _GridSubparserAction(argparse._SubParsersAction):
+class _GridSubparsersAction(argparse._SubParsersAction):
     def __call__(
         self,
         parser: argparse.ArgumentParser,
@@ -76,7 +77,7 @@ class _GridSubparserAction(argparse._SubParsersAction):
 class _GridActionsContainer(argparse._ActionsContainer):
     def __init__(self, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        self.register("action", "parsers", _GridSubparserAction)
+        self.register("action", "parsers", _GridSubparsersAction)
 
 
 class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
@@ -177,7 +178,20 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
                     borrow_arg = val.split("args.")[1]
                     setattr(ns, arg, getattr(ns, borrow_arg, None))
 
-        if len(vals) == 1:
+        is_grid_search = len(self._grid_args) > 0
+
+        for potential_subparser in getattr(
+            self._subparsers, "_group_actions", []
+        ):
+            try:
+                grid_args = next(
+                    iter(potential_subparser.choices.values())
+                )._grid_args
+                is_grid_search = is_grid_search or grid_args
+            except AttributeError:
+                continue
+
+        if len(vals) == 1 and not is_grid_search:
             return vals[0]
         return vals
 
