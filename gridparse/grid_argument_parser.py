@@ -170,6 +170,12 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         if "___namespaces___" in vals[0]:
             vals = vals[0].___namespaces___
 
+        # get unrecognized arguments from other namespaces
+        if hasattr(vals[0], argparse._UNRECOGNIZED_ARGS_ATTR):
+            argv = getattr(vals[0], argparse._UNRECOGNIZED_ARGS_ATTR)
+            msg = argparse._("unrecognized arguments: %s")
+            self.error(msg % " ".join(argv))
+
         for ns in vals:
             # get defaults from other arguments
             for arg in dir(ns):
