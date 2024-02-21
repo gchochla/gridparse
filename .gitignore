@@ -154,3 +154,4 @@ cython_debug/
 experiment_logs/
 .vscode
 .data-cache
+tests/
