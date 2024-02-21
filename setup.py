@@ -2,7 +2,7 @@ from setuptools import setup, find_packages
 
 setup(
     name="gridparse",
-    version="1.1.6",
+    version="1.2.0",
     description="Grid search directly from argparse",
     author="Georgios Chochlakis",
     author_email="chochlak@usc.edu",

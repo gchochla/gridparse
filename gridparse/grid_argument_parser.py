@@ -2,7 +2,6 @@ import argparse
 import warnings
 from typing import Any, Tuple, List, Optional, Union, Sequence
 from copy import deepcopy
-from pprint import pprint
 
 from gridparse.utils import list_as_dashed_str, strbool
 
@@ -208,10 +207,25 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         type_func = self._registry_get('type', action.type, action.type)
         default = action.default
 
+        # if default is "args.X" value,
+        # then set up value so that X is grabbed from the same namespace later
         if (isinstance(default, str) and default.startswith("args.")) and (
             default == arg_string or arg_string is None
         ):
+            return default
+    
+        # if arg_string is "args.X" value,
+        # then set up value so that X is grabbed from the same namespace later
+        if arg_string.startswith("args."):
             return arg_string
+        
+        # if arg_string is "_None_", then return None
+        if (
+            arg_string == "_None_"
+            and action.dest in self._grid_args
+            and action.type is not strbool
+        ):
+            return None
 
         if not callable(type_func):
             msg = argparse._('%r is not callable')
