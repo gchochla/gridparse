@@ -108,6 +108,7 @@ In case some parameter is searchable (and not a boolean), you might need one of 
 Moreover, you can use the value (not the default) of another argument as the default by setting the default to `args.<name-of-other-argument>`.
 
 ```python
+>>> parser = gridparse.GridArgumentParser()
 >>> parser.add_argument('--num', type=int, searchable=True)
 >>> parser.add_argument('--other-num', type=int, searchable=True, default="args.num")
 >>> parser.parse_args("--num 1 2".split())
@@ -117,3 +118,17 @@ Moreover, you can use the value (not the default) of another argument as the def
 You can also specify so in the command line, i.e., `args.<name-of-other-argument>` does not have to appear in the default value of the argument.
 
 This allows you the flexibility to have a parameter default to another parameter's values, and then specify different values when need arises (example use case: specify different CUDA device for a specific component only when OOM errors are encountered, and have it default to the "general" device otherwise).
+
+### Different value for each dataset split
+
+You can specify the kw argument `splits` to create one argument per split:
+
+```python
+>>> parser = gridparse.GridArgumentParser()
+>>> parser.add_argument('--num', type=int, searchable=True)
+>>> parser.add_argument('--other-num', type=int, splits=["train", "test"])
+>>> parser.parse_args("--num 1 2 --train-other-num 3 --test-other-num 5".split())
+[Namespace(num=1, test_other_num=5, train_other_num=3), Namespace(num=2, test_other_num=5, train_other_num=3)]
+```
+
+Note that if an underscore (`_`) exists in the name of the argument, the new names will also join the splits with the original name with an underscore: `--other_num` to `--train_other_num`, etc. The new arguments are separate, i.e. if searchable, you do *not* have to specify the same number of values, etc. They each gain all the properties specified in the original argument.

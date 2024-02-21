@@ -266,7 +266,7 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         # return the converted value
         return result
 
-    def add_argument(self, *args, **kwargs) -> argparse.Action:
+    def add_argument(self, *args, **kwargs) -> Union[argparse.Action, List[argparse.Action]]:
         """Augments `add_argument` to support grid search.
         For parameters that are searchable, provide specification
         for a single value, and set the new argument `searchable`
@@ -275,7 +275,7 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
 
         ## copy-pasted code
         chars = self.prefix_chars
-        if not args or len(args) == 1 and args[0][0] not in chars:
+        if not args or (len(args) == 1 and args[0][0] not in chars):
             if args and "dest" in kwargs:
                 raise ValueError("dest supplied twice for positional argument")
             new_kwargs = self._get_positional_kwargs(*args, **kwargs)
@@ -284,6 +284,38 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         else:
             new_kwargs = self._get_optional_kwargs(*args, **kwargs)
         ## edoc detsap-ypoc
+
+        # create multiple arguments for each split
+        splits = kwargs.pop("splits", [])
+        if splits:
+            actions = []
+            for split in splits:
+
+                cp_args = deepcopy(list(args))
+                cp_kwargs = deepcopy(kwargs)
+
+                if args:
+                    i = 0
+                    while cp_args[0][i] in self.prefix_chars:
+                        i += 1
+
+                    # if the user uses "_" as a delimiter, we use that
+                    if "_" in cp_args[0][i:]:
+                        delim = "_"
+                    # otherwise, we use "-" (no necessary to check for it, e.g., could be CamelCase)
+                    else:
+                        delim = "-"
+                    cp_args[0] = cp_args[0][:i] + split + delim + cp_args[0][i:]
+                else:
+                    if "_" in cp_kwargs["dest"]:
+                        delim = "_"
+                    else:
+                        delim = "-"
+                    cp_kwargs["dest"] = split + delim + cp_kwargs['dest']
+
+                actions.append(self.add_argument(*cp_args, **cp_kwargs))
+
+            return actions
 
         type = kwargs.get("type", None)
         if type is not None and type == bool:
