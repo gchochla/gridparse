@@ -266,6 +266,18 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         # return the converted value
         return result
 
+    @staticmethod
+    def _add_split_in_arg(arg: str, split: str) -> str:
+        """Adds the `split` to the name of the argument `arg`."""
+        
+        if "_" in arg:
+        # if the user uses "_" as a delimiter, we use that
+            delim = "_"
+        else:
+        # otherwise, we use "-" (no necessary to check for it, e.g., could be CamelCase)
+            delim = "-"
+        return split + delim + arg
+
     def add_argument(self, *args, **kwargs) -> Union[argparse.Action, List[argparse.Action]]:
         """Augments `add_argument` to support grid search.
         For parameters that are searchable, provide specification
@@ -299,19 +311,10 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
                     while cp_args[0][i] in self.prefix_chars:
                         i += 1
 
-                    # if the user uses "_" as a delimiter, we use that
-                    if "_" in cp_args[0][i:]:
-                        delim = "_"
-                    # otherwise, we use "-" (no necessary to check for it, e.g., could be CamelCase)
-                    else:
-                        delim = "-"
-                    cp_args[0] = cp_args[0][:i] + split + delim + cp_args[0][i:]
+                    cp_args[0] = cp_args[0][:i] + self._add_split_in_arg(cp_args[0][i:], split)
+
                 else:
-                    if "_" in cp_kwargs["dest"]:
-                        delim = "_"
-                    else:
-                        delim = "-"
-                    cp_kwargs["dest"] = split + delim + cp_kwargs['dest']
+                    cp_kwargs["dest"] = self._add_split_in_arg(cp_kwargs["dest"], split)
 
                 actions.append(self.add_argument(*cp_args, **cp_kwargs))
 
