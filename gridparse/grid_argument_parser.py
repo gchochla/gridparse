@@ -199,6 +199,14 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         if len(vals) == 1 and not is_grid_search:
             return vals[0]
         return vals
+    
+    def _check_value(self, action, value):
+        # converted value must be one of the choices (if specified)
+        if action.choices is not None and (value not in action.choices and value is not None):
+            args = {'value': value,
+                    'choices': ', '.join(map(repr, action.choices))}
+            msg = argparse._('invalid choice: %(value)r (choose from %(choices)s)')
+            raise argparse.ArgumentError(action, msg % args)
 
     def _get_value(self, action, arg_string):
         """Overwrites `_get_value` to support grid search.
