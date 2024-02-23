@@ -183,21 +183,21 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
                     borrow_arg = val.split("args.")[1]
                     setattr(ns, arg, getattr(ns, borrow_arg, None))
 
-        is_grid_search = len(self._grid_args) > 0
+        # is_grid_search = len(self._grid_args) > 0
+        # for potential_subparser in getattr(
+        #     self._subparsers, "_group_actions", []
+        # ):
+        #     try:
+        #         grid_args = next(
+        #             iter(potential_subparser.choices.values())
+        #         )._grid_args
+        #         is_grid_search = is_grid_search or grid_args
+        #     except AttributeError:
+        #         continue
+        # if len(vals) == 1 and not is_grid_search:
+        #     warnings.warn("Use")
+        #     return vals[0]
 
-        for potential_subparser in getattr(
-            self._subparsers, "_group_actions", []
-        ):
-            try:
-                grid_args = next(
-                    iter(potential_subparser.choices.values())
-                )._grid_args
-                is_grid_search = is_grid_search or grid_args
-            except AttributeError:
-                continue
-
-        if len(vals) == 1 and not is_grid_search:
-            return vals[0]
         return vals
     
     def _check_value(self, action, value):
@@ -374,6 +374,8 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
                 layer.append([])
             layer[-1].append(arg)
 
+        # TODO: needs to return arguments in the order they were provided
+        #   no matter the depth
         def parse_paths(self):
             """Parses all leaf-to-root paths by concatenating their values."""
 
@@ -400,7 +402,7 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
                 for child in children:
                     paths = recursive_path(depth + 1, child)
                     for path in paths:
-                        child_acc_args.append(path + self.layers[depth][node])
+                        child_acc_args.append(self.layers[depth][node] + path)
                 return child_acc_args
 
             return recursive_path(0, 0)
