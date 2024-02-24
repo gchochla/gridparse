@@ -167,7 +167,7 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         vals = super().parse_args(*args, **kwargs)
         # hacky way to return namespaces in subparser
         if "___namespaces___" in vals[0]:
-            vals = vals[0].___namespaces___
+            vals = [ns for subps_ns in vals for ns in subps_ns.___namespaces___]
 
         # get unrecognized arguments from other namespaces
         if hasattr(vals[0], argparse._UNRECOGNIZED_ARGS_ATTR):
