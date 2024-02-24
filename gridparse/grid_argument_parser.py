@@ -347,65 +347,55 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         # doesn't add `searchable` in _StoreAction
         return super().add_argument(*args, **kwargs)
 
-    class _Tree:
-        """Tree data structure to parse grid search arguments.
-        Always assumes that last node in each layer is the active one
-        (special case in this application)."""
+    class Subspace:
+        def __init__(self, parent: Optional["Subspace"] = None):
+            self.args = {}
+            self.subspaces = {}
+            self.cnt = 0
+            self.parent = parent
+        
+        def add_arg(self, arg: str):
+            if arg == "{":
+                new_subspace = GridArgumentParser.Subspace(self)
+                self.subspaces[self.cnt] = new_subspace
+                self.cnt += 1
+                return new_subspace
+            elif arg == "}":
+                return self.parent
+            else:
+                self.args[self.cnt] = arg
+                self.cnt += 1
+                return self
+        
+        def parse_paths(self) -> List[List[str]]:
 
-        def __init__(self):
-            """Initializes the tree."""
-            self.layers = {}
-            self.children = {}
+            if not self.subspaces:
+                return [list(self.args.values())]
 
-        def add_child(self, depth: int):
-            """Adds a child to the last node at the given depth.
-            This is assigned to the last node of the previous layer."""
-            self.layers.setdefault(depth, []).append([])
-            if depth > 0:
-                children = self.children.setdefault(depth - 1, [])
-                if not children:
-                    children.append([])
-                children[-1].append(len(self.layers[depth]) - 1)
+            this_subspace_args = []
+            cumulative_args = []
 
-        def add_arg(self, depth, arg):
-            """Adds an argument to the last node at the given depth."""
-            layer = self.layers.setdefault(depth, [])
-            if not layer:
-                layer.append([])
-            layer[-1].append(arg)
-
-        # TODO: needs to return arguments in the order they were provided
-        #   no matter the depth
-        def parse_paths(self):
-            """Parses all leaf-to-root paths by concatenating their values."""
-
-            if 0 not in self.layers:
-                # we get weird behavior if no root-level arguments are given
-                # so we add an empty list to the root layer
-                self.layers[0] = [[]]
-
-            def recursive_path(depth: int, node: int):
-                """Recursively parses all paths from the given node."""
-                if depth > max(self.layers.keys()):
-                    return []
-                children = (
-                    self.children[depth][node]
-                    if depth in self.children
-                    and node < len(self.children[depth])
-                    else []
-                )
-
-                if not children:
-                    return [self.layers[depth][node]]
-
-                child_acc_args = []
-                for child in children:
-                    paths = recursive_path(depth + 1, child)
+            for i in range(self.cnt):
+                if i in self.subspaces:
+                    paths = self.subspaces[i].parse_paths()
                     for path in paths:
-                        child_acc_args.append(self.layers[depth][node] + path)
-                return child_acc_args
-
-            return recursive_path(0, 0)
+                        cumulative_args.append(this_subspace_args + path)
+                else:
+                    this_subspace_args.append(self.args[i])
+                    for path in cumulative_args:
+                        path.append(self.args[i])
+            
+            return cumulative_args
+    
+        def __repr__(self) -> str:
+            repr = "Subspace("
+            for i in range(self.cnt):
+                if i in self.subspaces:
+                    repr += f"{self.subspaces[i]}, "
+                else:
+                    repr += f"{self.args[i]}, "
+            repr = repr[:-2] + ")"
+            return repr
 
     def _parse_known_args(
         self, arg_strings: List[str], namespace: argparse.Namespace
@@ -462,24 +452,13 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         arg_strings = new_arg_strings
 
         # break arg_strings into subspaces on { and }
-        arg_strings_tree = self._Tree()
-        sq_br_cnt = 0  # act like a "stack"
+        root_subspace = self.Subspace()
+        current_subspace = root_subspace
 
         for arg in arg_strings:
-            if arg == "{":
-                sq_br_cnt += 1
-                # adds new child at depth `sq_br_cnt`,
-                # which is current active node at that
-                # depth until a new child at that depth is created
-                # this is assigned to the last active node of the previous layer
-                arg_strings_tree.add_child(sq_br_cnt)
-            elif arg == "}":
-                sq_br_cnt -= 1
-            else:
-                # adds value to last search subspace in the current depth
-                arg_strings_tree.add_arg(sq_br_cnt, arg)
+            current_subspace = current_subspace.add_arg(arg)
 
-        all_arg_strings = arg_strings_tree.parse_paths()
+        all_arg_strings = root_subspace.parse_paths()
         all_namespaces = []
         all_args = []
 
