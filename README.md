@@ -1,6 +1,6 @@
 # GridParse
 
-A lightweight (no dependencies) `ArgumentParser` --- aka `GridArgumentParser` --- that supports your *grid-search* needs. Supports top-level parser and subparsers.
+A lightweight (only dependency is `omegaconf` which also downloads `yaml`) `ArgumentParser` --- aka `GridArgumentParser` --- that supports your *grid-search* needs. Supports top-level parser and subparsers. Configuration files of any type (using `omegaconf`) as also support through the argument `--gridparse-config` (also available with underscore `_`), where multiple configuration files can be passed and parsed.
 
 ## Overview
 
@@ -91,6 +91,10 @@ assert len(args) == 2 * ((3 * (3 + 4)) + 3)
 ```
 
 ## Additional capabilities
+
+### Configuration files
+
+Using `omegaconf` (the only dependency), we allow users to specify (potentially multiple) configuration files that can be used to populate the resulting namespace(s). Access the through the `gridparse-config` argument: `--gridparse-config /this/config.json /that/config.yml`. Command-line arguments are given higher priority, and then the priority is in order of appearance in the command line for the configuration files.
 
 ### Specify `None` in command-line
 

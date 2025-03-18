@@ -1,7 +1,9 @@
+import os
 import argparse
 import warnings
 from typing import Any, Tuple, List, Optional, Union, Sequence
 from copy import deepcopy
+from omegaconf import OmegaConf
 
 from gridparse.utils import list_as_dashed_str, strbool
 
@@ -159,9 +161,25 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         ```
     """
 
-    def __init__(self, *args, **kwargs):
+    def __init__(self, retain_config_filename: bool = False, *args, **kwargs):
+        """Initializes the GridArgumentParser.
+        
+        Args:
+            retain_config_filename: whether to keep the `gridparse-config` argument
+                in the namespace or not.
+        """
         self._grid_args = []
+        self._retain_config_filename = retain_config_filename
         super().__init__(*args, **kwargs)
+        self.add_argument(
+            "--gridparse-config",
+            "--gridparse_config",
+            type=str,
+            nargs="*",
+            help="Path to a configuration file with default values for parser. "
+            "Values will be used if not provided in the command line.",
+        )
+
 
     def parse_args(self, *args, **kwargs):
         vals = super().parse_args(*args, **kwargs)
@@ -197,6 +215,23 @@ class GridArgumentParser(_GridActionsContainer, argparse.ArgumentParser):
         # if len(vals) == 1 and not is_grid_search:
         #     warnings.warn("Use")
         #     return vals[0]
+
+        for ns in vals:
+            cfg = {}
+            if ns.gridparse_config is not None:
+                # reverse for priority to originally first configs
+                for potential_fn in reversed(getattr(ns, "gridparse_config", [])):
+                    if os.path.isfile(potential_fn):
+                        cfg = OmegaConf.merge(cfg, OmegaConf.load(potential_fn))
+
+                for arg in cfg:
+                    if not hasattr(ns, arg):
+                        continue
+                    if getattr(ns, arg) is None:
+                        setattr(ns, arg, getattr(cfg, arg))
+
+            if not self._retain_config_filename:
+                delattr(ns, "gridparse_config")
 
         return vals
     
