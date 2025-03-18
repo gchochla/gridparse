@@ -43,3 +43,10 @@ dev = ["black", "pytest"]
 "Homepage" = "https://github.com/gchochla/gridparse"
 "Bug Reports" = "https://github.com/gchochla/gridparse/issues"
 "Source" = "https://github.com/gchochla/gridparse"
+
+[build-system]
+requires = [
+    "setuptools>=61.0.0",
+    "wheel"
+]
+build-backend = "setuptools.build_meta"
