@@ -14,7 +14,7 @@ class AuxArgumentParser(argparse.ArgumentParser):
 
     def parse_known_args(
         self, args=None, namespace=None
-    ) -> Tuple[argparse.Namespace, List[str], Set[str]]:
+    ) -> Tuple[argparse.Namespace, List[str]]:
         """Overwritten to collect the argument names that
         are specified in the command line."""
         if args is None:
@@ -61,7 +61,7 @@ class AuxArgumentParser(argparse.ArgumentParser):
 
     def _parse_known_args(
         self, arg_strings, namespace
-    ) -> Tuple[List[argparse.Namespace], List[str], Set[str]]:
+    ) -> Tuple[List[argparse.Namespace], List[str]]:
         """Overwritten to collect the argument names that
         are specified in the command line."""
 
