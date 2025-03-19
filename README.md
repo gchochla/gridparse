@@ -1,6 +1,6 @@
 # GridParse
 
-A lightweight (only dependency is `omegaconf` which also downloads `yaml`) `ArgumentParser` --- aka `GridArgumentParser` --- that supports your *grid-search* needs. Supports top-level parser and subparsers. Configuration files of any type (using `omegaconf`) as also support through the argument `--gridparse-config` (also available with underscore `_`), where multiple configuration files can be passed and parsed.
+A lightweight (only dependency is `omegaconf` which also downloads `yaml`) `ArgumentParser` --- aka `GridArgumentParser` --- that supports your *grid-search* needs. Supports top-level parser and subparsers. Configuration files of any type (using `omegaconf`) are also supported through the argument `--gridparse-config` (also available with underscore `_`), where multiple configuration files can be passed and parsed.
 
 ## Overview
 
@@ -18,7 +18,27 @@ So, for single arguments, it extends them similar to nargs="+". For multiple arg
 
 ## Examples
 
-Example without subspaces:
+Example with subspaces:
+
+```python
+parser = GridArgumentParser()
+parser.add_argument("--hparam1", type=int, searchable=True)
+parser.add_argument("--hparam2", type=int, searchable=True)
+parser.add_argument("--hparam3", type=int, searchable=True, default=1000)
+parser.add_argument("--hparam4", type=int, searchable=True, default=2000)
+parser.add_argument("--normal", required=True, type=str)
+
+args = parser.parse_args(
+    (
+        "--hparam1 1 2 "
+        "{--hparam2 1 2 3 {--normal normal --hparam4 100 101 102} {--normal maybe --hparam4 200 201 202 203}} "
+        "{--hparam2 4 5 6 --normal not-normal}"
+    ).split()
+)
+assert len(args) == 2 * ((3 * (3 + 4)) + 3)
+```
+
+Example without subspaces but with lists for grid-search:
 
 ```python
 parser = GridArgumentParser()
@@ -68,26 +88,6 @@ Namespace(hparam1=[1, 2, 3], hparam2=[5, 4], lists=[['3', '4', '5'], ['6', '7']]
 Namespace(hparam1=[1, 2, 3], hparam2=[6, 5], lists=[['3', '4', '5'], ['6', '7']], normal='efrgthytfgn', normal_lists=[['1', '2', '3'], ['4', '5', '6']])
 
 ]
-```
-
-Example with subspaces:
-
-```python
-parser = GridArgumentParser()
-parser.add_argument("--hparam1", type=int, searchable=True)
-parser.add_argument("--hparam2", type=int, searchable=True)
-parser.add_argument("--hparam3", type=int, searchable=True, default=1000)
-parser.add_argument("--hparam4", type=int, searchable=True, default=2000)
-parser.add_argument("--normal", required=True, type=str)
-
-args = parser.parse_args(
-    (
-        "--hparam1 1 2 "
-        "{--hparam2 1 2 3 {--normal normal --hparam4 100 101 102} {--normal maybe --hparam4 200 201 202 203}} "
-        "{--hparam2 4 5 6 --normal not-normal}"
-    ).split()
-)
-assert len(args) == 2 * ((3 * (3 + 4)) + 3)
 ```
 
 ## Additional capabilities
