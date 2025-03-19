@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.2] - 2025-03-19
+
+### Fixed
+- Bug caused by leftover code
+
 ## [1.5.1] - 2025-03-18
 
 ### Fixed
