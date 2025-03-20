@@ -1,0 +1,149 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg viewBox="0 0 300 300" xmlns="http://www.w3.org/2000/svg">
+  <!-- Background circle -->
+  <circle cx="150" cy="150" r="140" fill="#f0f0f0" />
+  
+  <!-- Neural Network Grid -->
+  <g stroke="#3776ab" stroke-width="1.5" opacity="0.4">
+    <!-- Horizontal grid lines -->
+    <line x1="60" y1="90" x2="240" y2="90" />
+    <line x1="60" y1="120" x2="240" y2="120" />
+    <line x1="60" y1="150" x2="240" y2="150" />
+    <line x1="60" y1="180" x2="240" y2="180" />
+    <line x1="60" y1="210" x2="240" y2="210" />
+    
+    <!-- Vertical grid lines -->
+    <line x1="60" y1="90" x2="60" y2="210" />
+    <line x1="90" y1="90" x2="90" y2="210" />
+    <line x1="120" y1="90" x2="120" y2="210" />
+    <line x1="150" y1="90" x2="150" y2="210" />
+    <line x1="180" y1="90" x2="180" y2="210" />
+    <line x1="210" y1="90" x2="210" y2="210" />
+    <line x1="240" y1="90" x2="240" y2="210" />
+  </g>
+  
+  <!-- Neural Network Nodes (Input Layer) -->
+  <circle cx="60" cy="120" r="6" fill="#3776ab" />
+  <circle cx="60" cy="150" r="6" fill="#3776ab" />
+  <circle cx="60" cy="180" r="6" fill="#3776ab" />
+  
+  <!-- Neural Network Nodes (Hidden Layer 1) -->
+  <circle cx="120" cy="90" r="6" fill="#3776ab" />
+  <circle cx="120" cy="120" r="6" fill="#3776ab" />
+  <circle cx="120" cy="150" r="6" fill="#3776ab" />
+  <circle cx="120" cy="180" r="6" fill="#3776ab" />
+  <circle cx="120" cy="210" r="6" fill="#3776ab" />
+  
+  <!-- Neural Network Nodes (Hidden Layer 2) -->
+  <circle cx="180" cy="90" r="6" fill="#3776ab" />
+  <circle cx="180" cy="120" r="6" fill="#3776ab" />
+  <circle cx="180" cy="150" r="6" fill="#3776ab" />
+  <circle cx="180" cy="180" r="6" fill="#3776ab" />
+  <circle cx="180" cy="210" r="6" fill="#3776ab" />
+  
+  <!-- Neural Network Nodes (Output Layer) -->
+  <circle cx="240" cy="120" r="6" fill="#3776ab" />
+  <circle cx="240" cy="150" r="6" fill="#3776ab" />
+  <circle cx="240" cy="180" r="6" fill="#3776ab" />
+  
+  <!-- Neural Network Connections - Input to Hidden Layer 1 -->
+  <g stroke="#3776ab" stroke-width="1.5" opacity="0.4">
+    <!-- From input 1 -->
+    <line x1="60" y1="120" x2="120" y2="90" />
+    <line x1="60" y1="120" x2="120" y2="120" />
+    <line x1="60" y1="120" x2="120" y2="150" />
+    
+    <!-- From input 2 -->
+    <line x1="60" y1="150" x2="120" y2="120" />
+    <line x1="60" y1="150" x2="120" y2="150" />
+    <line x1="60" y1="150" x2="120" y2="180" />
+    
+    <!-- From input 3 -->
+    <line x1="60" y1="180" x2="120" y2="150" />
+    <line x1="60" y1="180" x2="120" y2="180" />
+    <line x1="60" y1="180" x2="120" y2="210" />
+  </g>
+  
+  <!-- Neural Network Connections - Hidden Layer 1 to Hidden Layer 2 -->
+  <g stroke="#3776ab" stroke-width="1.5" opacity="0.4">
+    <!-- Just a subset of connections for clarity -->
+    <line x1="120" y1="90" x2="180" y2="90" />
+    <line x1="120" y1="90" x2="180" y2="120" />
+    
+    <line x1="120" y1="120" x2="180" y2="90" />
+    <line x1="120" y1="120" x2="180" y2="120" />
+    <line x1="120" y1="120" x2="180" y2="150" />
+    
+    <line x1="120" y1="150" x2="180" y2="120" />
+    <line x1="120" y1="150" x2="180" y2="150" />
+    <line x1="120" y1="150" x2="180" y2="180" />
+    
+    <line x1="120" y1="180" x2="180" y2="150" />
+    <line x1="120" y1="180" x2="180" y2="180" />
+    <line x1="120" y1="180" x2="180" y2="210" />
+    
+    <line x1="120" y1="210" x2="180" y2="180" />
+    <line x1="120" y1="210" x2="180" y2="210" />
+  </g>
+  
+  <!-- Neural Network Connections - Hidden Layer 2 to Output -->
+  <g stroke="#3776ab" stroke-width="1.5" opacity="0.4">
+    <!-- From hidden 2.1 -->
+    <line x1="180" y1="90" x2="240" y2="120" />
+    
+    <!-- From hidden 2.2 -->
+    <line x1="180" y1="120" x2="240" y2="120" />
+    <line x1="180" y1="120" x2="240" y2="150" />
+    
+    <!-- From hidden 2.3 -->
+    <line x1="180" y1="150" x2="240" y2="120" />
+    <line x1="180" y1="150" x2="240" y2="150" />
+    <line x1="180" y1="150" x2="240" y2="180" />
+    
+    <!-- From hidden 2.4 -->
+    <line x1="180" y1="180" x2="240" y2="150" />
+    <line x1="180" y1="180" x2="240" y2="180" />
+    
+    <!-- From hidden 2.5 -->
+    <line x1="180" y1="210" x2="240" y2="180" />
+  </g>
+  
+  <!-- Highlighted grid cells representing parameter search -->
+  <rect x="120" y="150" width="30" height="30" fill="#ffde57" opacity="0.3" rx="2" ry="2" />
+  <rect x="180" y="120" width="30" height="30" fill="#ffde57" opacity="0.3" rx="2" ry="2" />
+  <rect x="180" y="180" width="30" height="30" fill="#ffde57" opacity="0.3" rx="2" ry="2" />
+  
+  <!-- Blue Snake with integrated pointy tail -->
+  <path d="M28,108 L47,112 L38,118 Z" fill="#3776ab" stroke="none"/>
+  <path d="M42,115 C80,135 100,105 120,135 
+           S140,155 160,125 S180,155 200,125 S220,135 232,120" 
+        stroke="#3776ab" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+        
+  <!-- Blue Snake Head - larger and smoother for thicker body -->
+  <path d="M227,120 C235,127 245,128 254,123 S262,115 257,110 S240,112 227,120" 
+        fill="#3776ab" stroke="none" />
+  <ellipse cx="250" cy="116" rx="3.5" ry="4.5" fill="#ffffff" />
+  <ellipse cx="250" cy="116" rx="1.5" ry="2.5" fill="#000000" />
+  <!-- Snake tongue -->
+  <path d="M258,118 L266,116 L269,117 L266,118 L269,119 L266,120 Z" fill="#ff3355" stroke-width="0" />
+  
+  <!-- Yellow Snake with integrated pointy tail - MODIFIED PATH -->
+  <path d="M275,180 L255,175 L255,185 Z" fill="#ffde57" stroke="none"/>
+  <path d="M255,180 C235,170 215,195 195,175 
+           S175,170 155,190 S135,170 115,190 S95,175 80,180 S70,180 68,180" 
+        stroke="#ffde57" stroke-width="10" fill="none" stroke-linecap="round" stroke-linejoin="round" />
+  
+  <!-- Yellow Snake Head - adjusted for thicker body -->
+  <path d="M71,180 C65,185 58,186 52,182 S46,176 51,173 S65,174 71,180" 
+        fill="#ffde57" stroke="none" />
+  <ellipse cx="55" cy="177" rx="2.5" ry="3.5" fill="#ffffff" />
+  <ellipse cx="55" cy="177" rx="1" ry="2" fill="#000000" />
+  <!-- Snake tongue -->
+  <path d="M50,178 L43,176 L40,177 L43,178 L40,179 L43,180 Z" fill="#ff3355" stroke-width="0" />
+  
+  <!-- Name of the library -->
+  <text x="150" y="60" font-family="Arial, sans-serif" font-size="36" font-weight="bold" text-anchor="middle" fill="#3776ab"></text>
+  
+  <!-- Command line symbol -->
+  <text x="150" y="250" font-family="Courier New, monospace" font-size="16" text-anchor="middle" fill="#333">--gridparse</text>
+</svg>
