@@ -51,7 +51,7 @@ parser.add_argument(
     "--lists",
     required=True,
     nargs="+",
-    type=list_as_dashed_str(str),
+    type=list_as_dashed_str(int),
     searchable=True,
 )
 parser.add_argument(
@@ -62,12 +62,12 @@ parser.add_argument(
 )
 args = parser.parse_args(
     (
-        "--hparam1 1~~2~~3 --hparam2 4~~3 5~~4 6~~5 "
+        "--hparam1 1 2 3 --hparam2 4~~3 5~~4 6~~5 "
         "--normal efrgthytfgn --lists 1-2-3 3-4-5~~6-7 "
         "--normal_lists 1-2-3 4-5-6"
     ).split()
 )
-assert len(args) == 1 * 3 * 1 * 2 * 1  # corresponding number of different values in input CL arguments
+assert len(args) == 3 * 3 * 1 * 2 * 1  # corresponding number of different values in input CL arguments
 
 pprint(args)
 ```
