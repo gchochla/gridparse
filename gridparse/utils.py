@@ -1,4 +1,5 @@
 import argparse
+import re
 from typing import Callable
 
 
@@ -20,7 +21,9 @@ def list_as_dashed_str(actual_type: Callable, delimiter: str = "-"):
     def _list_of_lists(s: str):
         if s == "None":
             return None
-        l = [actual_type(e) for e in s.split(delimiter)]
+        pattern = fr'(?:(?<!\d)-)?\d+'
+        elements = re.findall(pattern,s)
+        l = [actual_type(e) for e in elements]
         return l
 
     return _list_of_lists
