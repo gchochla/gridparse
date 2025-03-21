@@ -51,20 +51,20 @@ parser.add_argument(
     "--lists",
     required=True,
     nargs="+",
-    type=list_as_dashed_str(int),
+    type=list_as_delim_str(int),
     searchable=True,
 )
 parser.add_argument(
     "--normal_lists",
     required=True,
     nargs="+",
-    type=list_as_dashed_str(str),
+    type=list_as_delim_str(str),
 )
 args = parser.parse_args(
     (
-        "--hparam1 1 2 3 --hparam2 4~~3 5~~4 6~~5 "
-        "--normal efrgthytfgn --lists 1-2-3 3-4-5~~6-7 "
-        "--normal_lists 1-2-3 4-5-6"
+        "--hparam1 1 2 3 --hparam2 4|3 5|4 6|5 "
+        "--normal efrgthytfgn --lists 1,-2,3 3,4,5|6,7 "
+        "--normal_lists a,b,c d,e,f"
     ).split()
 )
 assert len(args) == 3 * 3 * 1 * 2 * 1  # corresponding number of different values in input CL arguments
@@ -91,6 +91,11 @@ Namespace(hparam1=[1, 2, 3], hparam2=[6, 5], lists=[['3', '4', '5'], ['6', '7']]
 
 ]
 ```
+
+Searchable argument always use space to designate a different configuration. Namely, notice that for:
+- `nargs` and `searchable=True`, `nargs` is delimited by `|` and `searchable` uses the spaces.
+- `nargs` and `searchable=True` and `list_as_delim_str`, `nargs` uses `|` within each configuration, and `list_as_delim_str` uses `,` within each list of the same configuration, and space is still used by `searchable` to split configurations.
+
 
 ## Additional capabilities
 

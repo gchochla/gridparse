@@ -2,12 +2,12 @@ import argparse
 from typing import Callable
 
 
-# TODO: has issues with negative numbers
-def list_as_dashed_str(actual_type: Callable, delimiter: str = "-"):
+# NOTE: has issues with negative numbers if delim="-"
+def list_as_delim_str(actual_type: Callable, delimiter: str = ","):
     """Creates a function that converts a string to a list of elements.
 
     Can be used as the `type` argument in `argparse` to convert
-    a string to a list of elements, e.g.: `["1-2-3", "4-5-6"]` to
+    a string to a list of elements, e.g.: `["1,2,3", "4,5,6"]` to
     `[[1, 2, 3], [4, 5, 6]]` (note that this operates on a single
     `str` at a time, use `nargs` to pass multiple).
 

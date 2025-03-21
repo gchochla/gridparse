@@ -5,7 +5,7 @@ from typing import Any, Tuple, List, Optional, Union, Sequence
 from copy import deepcopy
 from omegaconf import OmegaConf
 
-from gridparse.utils import list_as_dashed_str, strbool
+from gridparse.utils import list_as_delim_str, strbool
 
 
 class AuxArgumentParser(argparse.ArgumentParser):
@@ -710,7 +710,7 @@ class GridArgumentParser(_GridActionsContainer, AuxArgumentParser):
             type = kwargs.get("type", None)
 
             if nargs == "+":
-                type = list_as_dashed_str(type, delimiter="~~")
+                type = list_as_delim_str(type, delimiter="|")
             else:
                 nargs = "+"
 
