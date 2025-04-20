@@ -5,7 +5,7 @@ with open("README.md", "r", encoding="utf-8") as fh:
 
 setup(
     name="gridparse",
-    version="1.5.4",
+    version="1.5.5",
     description="Grid search directly from argparse",
     author="Georgios Chochlakis",
     author_email="georgioschochlakis@gmail.com",

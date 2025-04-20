@@ -2,17 +2,23 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.5] - 2025-04-20
+
+### Fixed
+- Reverted 1.5.4
+- Promised to integrate unittests soon
+
 ## [1.5.4] - 2025-04-20
 
-## Changes
+### Changes
 - `_None_` can now be used for non-searchable arguments
 
 ## [1.5.3] - 2025-03-20
 
-## Fixed
+### Fixed
 - Bug with negative numbers in lists as strs
 
-## Changes
+### Changes
 - Delimiter of `nargs` of searchable argument from `~~` to `|`
 - Util name form `list_as_dashed_str` to `list_as_delim_str`
 - Default delimiter in (now) `list_as_delim_str` changed to `,` (avoids errors with negative numbers)

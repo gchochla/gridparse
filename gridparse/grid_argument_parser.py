@@ -604,7 +604,7 @@ class GridArgumentParser(_GridActionsContainer, AuxArgumentParser):
         # if arg_string is "_None_", then return None
         if (
             arg_string == "_None_"
-            # and action.dest in self._grid_args
+            and action.dest in self._grid_args
             and action.type is not strbool
         ):
             return None
