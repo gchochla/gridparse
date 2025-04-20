@@ -2,6 +2,11 @@
 
 All notable changes to this project will be documented in this file.
 
+## [1.5.4] - 2025-04-20
+
+## Changes
+- `_None_` can now be used for non-searchable arguments
+
 ## [1.5.3] - 2025-03-20
 
 ## Fixed
